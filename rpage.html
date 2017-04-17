@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+<script src="jquery-1.11.1.min.js" ></script>
+</head>
+<style>
+/* css reset */
+body{ background-color:#f8f8f8; _background-attachment:fixed; _background-image:url(about:blank); color:#24313c; line-height:24px;}
+body,h1,h2,h3,h4,h5,h6,p,dl,dd,ul,ol,form,input,textarea,th,td,select{ margin:0; padding:0;}
+em,i,strong,font{ font-style:normal;}
+h1,h2,h3,h4,h5,h6{ font-size:14px; font-weight:normal;}
+a{ text-decoration:none; color:#24313c;}
+/*a:hover{ color:#24313c;}*/
+li{ list-style:none;}
+img{ border:0; vertical-align:middle;}
+input,textarea{ outline:none;font-family:"Microsoft YaHei","微软雅黑";font-size:14px;}
+input,select,textarea{ vertical-align:middle;}
+strong{ font-weight:normal;}
+body{ font-size:12px; font-family:"Microsoft YaHei","微软雅黑"; background-color:#fff; }
+body,html{height:100%;}
+table, caption, tbody, tfoot, thead, tr, th, td {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        font-size: 100%;
+        vertical-align: baseline;
+        background: transparent;
+}
+i,em{font-style: normal}
+table {border-collapse: collapse;border-spacing: 0;} 
+map,map area{outline:none;}
+
+/* public css */
+.fl{ float:left;}
+.fr{ float:right;}
+.clearFiex{zoom:1;}
+.clear{ clear:both; height:0px; width:0px; overflow:hidden;}
+.clearFiex:after{content:''; display:block; clear:both;}
+
+body{ overflow:hidden;}
+p{ font-size:60px; position:absolute; top:50%; color:#EB90DF; left:0%; opacity:0.1; margin-left:-30px;
+transition:all .5s;
+-moz-transition:all .5s;
+-webkit-transition:all .5s;
+-o-transition:all .5s;}
+strong{ height:80px; width:80px; border-bottom:20px solid #BC15B6; border-top:20px solid #F41E22; border-right:20px solid #BC15B6; border-left:20px solid #F41E22; border-radius:50%; position:absolute; top:60%; left:0%; margin-left:-50px;
+transition:all .5s .5s;
+-moz-transition:all .5s .5s;
+-webkit-transition:all .5s .5s;
+-o-transition:all .5s .5s;}
+.page{ width:100%; height:100%; position:relative;}
+.page:nth-of-type(2){ background-color:#EF8788;}
+.page:nth-of-type(3){ background-color:#D4BB64;}
+.page:nth-of-type(4){ background-color:#7EE089;}
+.page:nth-of-type(5){ background-color:#fff;}
+.page.active p{ left:50%; opacity:1;}
+.page.active strong{ left:50%;}
+.footer{ width:100%; background-color:#494646; height:300px; position:absolute; top:0; left:0;}
+.page-wrap{ width:100%; min-width:1200px; height:100%; position:relative;}
+
+.header{ width:100%; height:200px; background-color:#A3814F; position:absolute; bottom:0; left:0;}
+
+.p-inddex{ position:absolute; z-index:999; right:20px; top:50%; margin-top:-81px;}
+.p-inddex li{ width:14px; height:14px; border-radius:50%; background-color:#fff; margin:30px 0px; cursor:pointer;}
+.p-inddex li.active{ background-color:red;}
+
+@keyframes round{
+	0%{ transform:rotate(0deg)}
+	100%{ transform:rotate(360deg)}	
+}
+</style>
+<body>
+<ul class="p-inddex">
+	<li class="active"></li>
+	<li></li>
+	<li></li>
+</ul>
+<div class="page-wrap">
+	<div class="page">
+    	<div class="header"></div>
+    </div>
+    <div class="page page-ani">
+    	<p>一</p>
+        <strong></strong>
+    </div>
+    <div class="page page-ani">
+    	<p>二</p>
+        <strong></strong>
+    </div>
+    <div class="page page-ani">
+        <strong></strong>
+    	<p>三</p>
+    </div>
+    <div class="page">
+    	<div class="footer"></div>
+    </div>
+</div>
+
+</body>
+<script>
+var pageNum = 0,
+    isBoolean = true,
+	wheelBoolean = true,
+	pageSize = $('.page').size(),
+	direction,
+	pIndex = 0,
+	timer;
+
+init();//初始化
+
+function init(){
+	//rederHtml();
+	bindEvent();	
+}
+
+function bindEvent(){
+
+	topNum_ = 1 - $('.page').eq(0).find(".header").height()/$(window).height();
+	$('.page-wrap').css({'top':-topNum_*100+'%'});
+	
+	
+}
+
+//Rolling screen
+function pageRoll(){
+	
+	var endNum = $('.page').eq(pageSize-1).find(".footer").height()/$(window).height(),
+		topNum = $('.page').eq(0).find(".header").height()/$(window).height(),
+		topRange;
+	
+	if(pIndex<=0){
+		topRange = -(1-topNum)*100+'%';
+	}else{
+		topRange = pageNum<pageSize-1?pageNum*-100+'%':(pageSize-2)*-100-endNum*100+'%';	
+	}
+	
+	if(direction){
+		if(pIndex>=0){
+			$('.page').removeClass('active');	
+		}
+	}else{
+		if(pIndex<=pageSize-1){
+			$('.page').removeClass('active');	
+		}	
+	}
+
+	if(pIndex-1<pageSize-2&&pIndex-1>=0){
+		$('.p-inddex li').removeClass("active").eq(pIndex-1).addClass("active");
+	}
+	
+	$('.page-wrap').animate({top:topRange},1000,function(){
+		
+		if(pageNum<pageSize-1){
+			$('.page').eq(pageNum).addClass('active').siblings().removeClass('active');
+		}else{
+			$('.page').eq(pageSize-1).addClass('active').siblings().removeClass('active');	
+		}
+		
+		isBoolean = wheelBoolean = true;
+		
+	})
+	
+}
+
+/* 点击锚点翻屏 */
+$('.p-inddex li').click(function(){
+	var oIndex = $(this).index();
+	$(this).addClass('active').siblings().removeClass('active');
+	pageNum = pIndex = oIndex+1;
+	pageRoll();
+});
+
+document.onmousewheel = function(ev){  // 执行鼠标滚轮（IE，chrome）
+                  var ev = ev || window.event;
+                  wheelFn(ev)   
+};
+ 
+if(document.addEventListener){
+                  document.addEventListener('DOMMouseScroll',function(ev){ // 执行鼠标滚轮（兼容火狐）
+                        var ev = ev || window.event;
+                        wheelFn(ev)   
+                  },false);
+}
+
+//false下 true上
+function wheelFn(ev){ // 鼠标滚轮滚动函数 
+                  var isTrue;
+				  
+				  if(wheelBoolean==false){
+                        return;
+                  }
+                  wheelBoolean = false;
+				  
+                  if(ev.wheelDelta){
+                        isTrue = ev.wheelDelta>0?true:false;
+                  }else{
+                        isTrue = ev.detail<0?true:false;
+                  }
+
+                  if(isTrue){
+                        pageNum --;
+						pIndex = pageNum;
+                        if(pageNum<0){
+                              pageNum = 0;
+                        }
+                  }else{
+                        pageNum++;
+						pIndex = pageNum;
+                        if(pageNum>pageSize-1){
+                              pageNum = pageSize-1;
+                        }
+                  }
+				  
+				  direction = isTrue;
+                  pageRoll();
+				  
+}
+
+</script>
+</html>
